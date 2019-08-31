@@ -12,15 +12,10 @@ type User struct {
 	UserName string `json:"user_name"`
 }
 
-// Paste struct
-type Paste struct {
-
-}
-
 // db connection var
 var db *sql.DB
 
-// CRUD application methods
+// CRUD application methods for user table
 // create user
 func createUser(db *sql.DB, user User) {
 	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", user.ID, user.UserName)
@@ -61,6 +56,60 @@ func updateUser(db *sql.DB, user User) User {
 // delete user using id
 func deleteUser(db *sql.DB, id int) {
 	_, err := db.Query("DELETE FROM user WHERE id = ?", id)
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+// Paste struct
+type Paste struct {
+	ID int `json:"id"`
+	UserID int `json:"user_id"`
+	Title string `json:"title"`
+	Content string `json:"content"`
+}
+
+// CRUD application methods for paste table
+// create paste
+func createPaste(db *sql.DB, paste Paste) {
+	insert, err := db.Query("INSERT INTO paste VALUES (?, ?, ?, ?)", paste.ID, paste.UserID, paste.Title, paste.Content)
+	if err != nil {
+		panic(err.Error())
+	}
+	insert.Close()
+}
+
+// update paste
+func updatePaste(db *sql.DB, paste Paste) Paste {
+	_, err := db.Query("UPDATE paste SET title = ?, content = ? WHERE id = ? AND user_id = ?", paste.Title, paste.Content, paste.ID, paste.UserID)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return paste
+}
+
+// get paste
+func getPaste(db *sql.DB, id int) Paste {
+	val, err := db.Query("SELECT * FROM paste WHERE id = ?", id)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var paste Paste
+	for val.Next() {
+		err = val.Scan(&paste.ID, &paste.UserID, &paste.Title, &paste.Content)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	return paste
+}
+
+// delete post
+func deletePaste(db *sql.DB, id int) {
+	_, err := db.Query("DELETE FROM paste WHERE id = ?", id)
 	if err != nil {
 		panic(err.Error())
 	}
