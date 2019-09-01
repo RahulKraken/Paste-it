@@ -20,9 +20,4 @@ func main() {
 
 	fmt.Println("testing db here ->", db)
 	database.CreateUser(db, database.User{ID: 2, UserName: "Kraken"})
-	// user := database.User{
-	// 	ID: 2,
-	// 	UserName: "Kraken",
-	// }
-	// database.CreateUser(db, user)
 }
