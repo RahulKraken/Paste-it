@@ -2,13 +2,11 @@ package database
 
 import (
 	"database/sql"
-	// import and use as driver
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // User struct
 type User struct {
-	ID int `json:"id"`
+	ID		 int 	`json:"id"`
 	UserName string `json:"user_name"`
 }
 
@@ -61,10 +59,10 @@ func DeleteUser(db *sql.DB, id int) {
 
 // Paste struct
 type Paste struct {
-	ID int `json:"id"`
-	UserID int `json:"user_id"`
-	Title string `json:"title"`
-	Content string `json:"content"`
+	ID 		int 	`json:"id"`
+	UserID 	int 	`json:"user_id"`
+	Title 	string 	`json:"title"`
+	Content string 	`json:"content"`
 }
 
 // CRUD application methods for paste table
