@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"database/sql"
+	// import and use as driver
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,8 +17,9 @@ type User struct {
 var db *sql.DB
 
 // CRUD application methods for user table
-// create user
-func CreateUser(db *sql.DB, user User) {
+
+// createUser - create new user
+func createUser(db *sql.DB, user User) {
 	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", user.ID, user.UserName)
 	if err != nil {
 		panic(err.Error())
@@ -25,8 +27,8 @@ func CreateUser(db *sql.DB, user User) {
 	insert.Close()
 }
 
-// get user using id
-func GetUser(db *sql.DB, id int) User {
+// getUser - get user with id
+func getUser(db *sql.DB, id int) User {
 	data, err := db.Query("SELECT * FROM user WHERE id = ? LIMIT 1", id)
 	if err != nil {
 		panic(err.Error())
@@ -43,8 +45,8 @@ func GetUser(db *sql.DB, id int) User {
 	return user
 }
 
-// update user using id
-func UpdateUser(db *sql.DB, user User) User {
+// updateUser - update user
+func updateUser(db *sql.DB, user User) User {
 	_, err := db.Query("UPDATE user SET user.user_name = ? WHERE id = ?", user.UserName, user.ID)
 	if err != nil {
 		panic(err.Error())
@@ -53,8 +55,8 @@ func UpdateUser(db *sql.DB, user User) User {
 	return user
 }
 
-// delete user using id
-func DeleteUser(db *sql.DB, id int) {
+// deleteUser - delete user with id
+func deleteUser(db *sql.DB, id int) {
 	_, err := db.Query("DELETE FROM user WHERE id = ?", id)
 	if err != nil {
 		panic(err.Error())
@@ -70,8 +72,9 @@ type Paste struct {
 }
 
 // CRUD application methods for paste table
-// create paste
-func CreatePaste(db *sql.DB, paste Paste) {
+
+// createPaste - create new paste
+func createPaste(db *sql.DB, paste Paste) {
 	insert, err := db.Query("INSERT INTO paste VALUES (?, ?, ?, ?)", paste.ID, paste.UserID, paste.Title, paste.Content)
 	if err != nil {
 		panic(err.Error())
@@ -79,8 +82,8 @@ func CreatePaste(db *sql.DB, paste Paste) {
 	insert.Close()
 }
 
-// update paste
-func UpdatePaste(db *sql.DB, paste Paste) Paste {
+// updatePaste - update existing paste
+func updatePaste(db *sql.DB, paste Paste) Paste {
 	_, err := db.Query("UPDATE paste SET title = ?, content = ? WHERE id = ? AND user_id = ?", paste.Title, paste.Content, paste.ID, paste.UserID)
 	if err != nil {
 		panic(err.Error())
@@ -89,8 +92,8 @@ func UpdatePaste(db *sql.DB, paste Paste) Paste {
 	return paste
 }
 
-// get paste
-func GetPaste(db *sql.DB, id int) Paste {
+// getPaste - get paste with id
+func getPaste(db *sql.DB, id int) Paste {
 	val, err := db.Query("SELECT * FROM paste WHERE id = ?", id)
 	if err != nil {
 		panic(err.Error())
@@ -107,12 +110,57 @@ func GetPaste(db *sql.DB, id int) Paste {
 	return paste
 }
 
-// delete post
-func DeletePaste(db *sql.DB, id int) {
+// deletePaste - delete paste with id
+func deletePaste(db *sql.DB, id int) {
 	_, err := db.Query("DELETE FROM paste WHERE id = ?", id)
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+// exposed CRUD functions
+// User functions
+
+// CreateUser - new user
+func CreateUser(user User) {
+	createUser(db, user)
+}
+
+// UpdateUser - update existing user
+func UpdateUser(user User) {
+	updateUser(db, user)
+}
+
+// GetUser - get user with id
+func GetUser(id int) User {
+	return getUser(db, id)
+}
+
+// DeleteUser - delete user with id
+func DeleteUser(id int) {
+	deleteUser(db, id)
+}
+
+// Paste functions
+
+// CreatePaste - create new paste
+func CreatePaste(paste Paste) {
+	createPaste(db, paste)
+}
+
+// UpdatePaste - update paste
+func UpdatePaste(paste Paste) {
+	updatePaste(db, paste)
+}
+
+// GetPaste - get paste with id
+func GetPaste(id int) Paste {
+	return getPaste(db, id)
+}
+
+// DeletePaste - delete paste with id
+func DeletePaste(id int) {
+	deletePaste(db, id)
 }
 
 func init() {
