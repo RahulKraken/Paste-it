@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"fmt"
@@ -115,7 +115,7 @@ func DeletePaste(db *sql.DB, id int) {
 	}
 }
 
-func main() {
+func init() {
 	// try connecting to database
 	db, err := sql.Open("mysql", "pasteit:pasteit@tcp(127.0.0.1:3306)/pasteit_db")
 	if err != nil {
