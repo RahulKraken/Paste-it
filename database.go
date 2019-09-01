@@ -17,7 +17,7 @@ var db *sql.DB
 
 // CRUD application methods for user table
 // create user
-func createUser(db *sql.DB, user User) {
+func CreateUser(db *sql.DB, user User) {
 	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", user.ID, user.UserName)
 	if err != nil {
 		panic(err.Error())
@@ -26,7 +26,7 @@ func createUser(db *sql.DB, user User) {
 }
 
 // get user using id
-func getUser(db *sql.DB, id int) User {
+func GetUser(db *sql.DB, id int) User {
 	data, err := db.Query("SELECT * FROM user WHERE id = ? LIMIT 1", id)
 	if err != nil {
 		panic(err.Error())
@@ -44,7 +44,7 @@ func getUser(db *sql.DB, id int) User {
 }
 
 // update user using id
-func updateUser(db *sql.DB, user User) User {
+func UpdateUser(db *sql.DB, user User) User {
 	_, err := db.Query("UPDATE user SET user.user_name = ? WHERE id = ?", user.UserName, user.ID)
 	if err != nil {
 		panic(err.Error())
@@ -54,7 +54,7 @@ func updateUser(db *sql.DB, user User) User {
 }
 
 // delete user using id
-func deleteUser(db *sql.DB, id int) {
+func DeleteUser(db *sql.DB, id int) {
 	_, err := db.Query("DELETE FROM user WHERE id = ?", id)
 	if err != nil {
 		panic(err.Error())
@@ -71,7 +71,7 @@ type Paste struct {
 
 // CRUD application methods for paste table
 // create paste
-func createPaste(db *sql.DB, paste Paste) {
+func CreatePaste(db *sql.DB, paste Paste) {
 	insert, err := db.Query("INSERT INTO paste VALUES (?, ?, ?, ?)", paste.ID, paste.UserID, paste.Title, paste.Content)
 	if err != nil {
 		panic(err.Error())
@@ -80,7 +80,7 @@ func createPaste(db *sql.DB, paste Paste) {
 }
 
 // update paste
-func updatePaste(db *sql.DB, paste Paste) Paste {
+func UpdatePaste(db *sql.DB, paste Paste) Paste {
 	_, err := db.Query("UPDATE paste SET title = ?, content = ? WHERE id = ? AND user_id = ?", paste.Title, paste.Content, paste.ID, paste.UserID)
 	if err != nil {
 		panic(err.Error())
@@ -90,7 +90,7 @@ func updatePaste(db *sql.DB, paste Paste) Paste {
 }
 
 // get paste
-func getPaste(db *sql.DB, id int) Paste {
+func GetPaste(db *sql.DB, id int) Paste {
 	val, err := db.Query("SELECT * FROM paste WHERE id = ?", id)
 	if err != nil {
 		panic(err.Error())
@@ -108,7 +108,7 @@ func getPaste(db *sql.DB, id int) Paste {
 }
 
 // delete post
-func deletePaste(db *sql.DB, id int) {
+func DeletePaste(db *sql.DB, id int) {
 	_, err := db.Query("DELETE FROM paste WHERE id = ?", id)
 	if err != nil {
 		panic(err.Error())
