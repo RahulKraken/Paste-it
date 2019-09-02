@@ -120,3 +120,46 @@ func DeletePaste(db *sql.DB, id int) {
 		panic(err.Error())
 	}
 }
+
+// CRUD application methods for mapping table
+
+// CreateMapping - create a new mapping for a paste
+func CreateMapping(db *sql.DB, mapping Mapping) (string, error) {
+	_, err := db.Query("INSERT INTO mapping VALUES (?, ?)", mapping.ID, mapping.Hash)
+	if err != nil {
+		// log the error details
+		log.Println("Error inserting mapping for:", mapping.ID, "with hash:", mapping.Hash, "->", err)
+	}
+
+	return mapping.Hash, err
+}
+
+// GetMapping - get mapping for a paste
+func GetMapping(db *sql.DB, pasteID int) (string, error) {
+	val, err := db.Query("SELECT paste_hash FROM mapping WHERE paste_id = ? LIMIT 1", pasteID)
+	if err != nil {
+		// log the error details
+		log.Println("Error getting mapping for:", pasteID, "->", err)
+	}
+
+	var hash string
+	for val.Next() {
+		err = val.Scan(&hash); if err != nil {
+			// log the error
+			log.Println("Error parsing hash from results: err ->", err, "\nresult ->", val)
+		}
+	}
+
+	return hash, err
+}
+
+// DeleteMapping - delete a mapping in table
+func DeleteMapping(db *sql.DB, pasteID int) error {
+	_, err := db.Query("DELETE FROM mapping WHERE paste_id = ?", pasteID)
+	if err != nil {
+		// log the error
+		log.Println("Error deleting entry for paste_id =", pasteID)
+	}
+
+	return err
+}
