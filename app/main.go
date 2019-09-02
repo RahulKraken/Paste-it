@@ -19,6 +19,7 @@ var err error
 // handlers
 // create new user
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Hit", "/api/user", "Method:", r.Method)
 	decoder := json.NewDecoder(r.Body)
 	var user database.User
 	err := decoder.Decode(&user)
@@ -27,7 +28,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// if everything goes fine then persist user into database
-	log.Println(user)
+	log.Println("sending to db:", user)
 	database.CreateUser(db, user)
 }
 
@@ -48,8 +49,7 @@ func updateUserHandler(w http.ResponseWriter, r *http.Request) {
 // get user with id
 func getUserHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fmt.Println("id:", vars["id"])
-	log.Println("db:", db)
+	log.Println("id:", vars["id"])
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		log.Println(err)
@@ -79,20 +79,63 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	database.DeleteUser(db, id)
 }
 
+// create new paste
 func createPasteHandler(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var paste database.Paste
+	err := decoder.Decode(&paste); if err != nil {
+		panic(err.Error())
+	}
 
+	log.Println(paste)
+	log.Println("inserting into db")
+	database.CreatePaste(db, paste)
 }
 
+// update existing paste
 func updatePasteHandler(w http.ResponseWriter, r *http.Request) {
-	
+	decoder := json.NewDecoder(r.Body)
+	var paste database.Paste
+	err := decoder.Decode(&paste); if err != nil {
+		panic(err.Error())
+	}
+
+	log.Println(paste)
+	log.Println("updating in db")
+	database.UpdatePaste(db, paste)
 }
 
+// get paste with id
 func getPasteHandler(w http.ResponseWriter, r *http.Request) {
-	
+	vars := mux.Vars(r)
+	log.Println("paste id:", vars["id"])
+	id, err := strconv.Atoi(vars["id"]); if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid ID", http.StatusInternalServerError)
+		return
+	} 
+
+	val := database.GetPaste(db, id)
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(val); if err != nil {
+		log.Println(err)
+		http.Error(w, "Error parsing result", http.StatusInternalServerError)
+		return
+	}
 }
 
+// delete paste with id
 func deletePasteHandler(w http.ResponseWriter, r *http.Request) {
-	
+	vars := mux.Vars(r)
+	log.Println("paste id:", vars["id"])
+	id, err := strconv.Atoi(vars["id"]); if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid ID", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("deleting from db")
+	database.DeletePaste(db, id)
 }
 
 func main() {
@@ -123,6 +166,12 @@ func main() {
 	r.HandleFunc("/api/user", updateUserHandler).Methods("PUT")
 	r.HandleFunc("/api/user/{id}", getUserHandler).Methods("GET")
 	r.HandleFunc("/api/user/{id}", deleteUserHandler).Methods("DELETE")
+
+	// paste handlers
+	r.HandleFunc("/api/paste", createPasteHandler).Methods("POST")
+	r.HandleFunc("/api/paste", updatePasteHandler).Methods("PUT")
+	r.HandleFunc("/api/paste/{id}", getPasteHandler).Methods("GET")
+	r.HandleFunc("/api/paste/{id}", deletePasteHandler).Methods("DELETE")
 
 	// listen and serve
 	err = http.ListenAndServe(":5000", r)

@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"log"
 )
 
 // User struct
@@ -16,8 +17,10 @@ type User struct {
 func CreateUser(db *sql.DB, user User) {
 	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", user.ID, user.UserName)
 	if err != nil {
+		log.Println("db error:", err)
 		panic(err.Error())
 	}
+	log.Println("Inserting into db:", user)
 	insert.Close()
 }
 
