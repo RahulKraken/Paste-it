@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"github.com/RahulKraken/Paste-it/database"
+	"github.com/RahulKraken/Paste-it/hash"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 )
@@ -16,7 +17,7 @@ import (
 var db *sql.DB
 var err error
 
-// handlers
+// user handlers
 // create new user
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Hit", "/api/user", "Method:", r.Method)
@@ -79,6 +80,8 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	database.DeleteUser(db, id)
 }
 
+// paste handlers
+
 // create new paste
 func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
@@ -136,6 +139,21 @@ func deletePasteHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("deleting from db")
 	database.DeletePaste(db, id)
+}
+
+// create mapping
+func createMapping(paste database.Paste) {
+	hash := "oj2ida"
+	_, err = database.CreateMapping(db, database.Mapping{
+		ID: paste.ID,
+		Hash: hash,
+	})
+
+	if err != nil {
+		log.Println("could not create mapping:", err)
+	}
+
+	log.Printf("generated url: pasteit.com/%s", hash)
 }
 
 func main() {
