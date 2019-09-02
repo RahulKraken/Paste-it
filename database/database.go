@@ -11,6 +11,20 @@ type User struct {
 	UserName string `json:"user_name"`
 }
 
+// Paste struct
+type Paste struct {
+	ID 		int 	`json:"id"`
+	UserID 	int 	`json:"user_id"`
+	Title 	string 	`json:"title"`
+	Content string 	`json:"content"`
+}
+
+// Mapping struct
+type Mapping struct {
+	ID		int 	`json:"paste_id"`
+	Hash	string	`json:"paste_hash"`
+}
+
 // CRUD application methods for user table
 
 // CreateUser - create new user
@@ -58,14 +72,6 @@ func DeleteUser(db *sql.DB, id int) {
 	if err != nil {
 		panic(err.Error())
 	}
-}
-
-// Paste struct
-type Paste struct {
-	ID 		int 	`json:"id"`
-	UserID 	int 	`json:"user_id"`
-	Title 	string 	`json:"title"`
-	Content string 	`json:"content"`
 }
 
 // CRUD application methods for paste table
