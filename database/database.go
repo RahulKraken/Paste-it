@@ -163,3 +163,17 @@ func DeleteMapping(db *sql.DB, pasteID int) error {
 
 	return err
 }
+
+// ExistsMapping - check if a hash exists already
+func ExistsMapping(db *sql.DB, h string) bool {
+	res, err := db.Query("SELECT * FROM mapping WHERE paste_hash = ?", h)
+	if err != nil || !res.Next() {
+		// log `h` is available
+		log.Println(h, "is available")
+		return false
+	}
+
+	// log `h` is already in use
+	log.Println(h, "is already being used.")
+	return true
+}

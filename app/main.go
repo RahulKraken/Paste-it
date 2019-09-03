@@ -93,6 +93,9 @@ func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(paste)
 	log.Println("inserting into db")
 	database.CreatePaste(db, paste)
+
+	log.Println("creating mapping")
+	createMapping(paste)
 }
 
 // update existing paste
@@ -143,17 +146,22 @@ func deletePasteHandler(w http.ResponseWriter, r *http.Request) {
 
 // create mapping
 func createMapping(paste database.Paste) {
-	hash := "oj2ida"
-	_, err = database.CreateMapping(db, database.Mapping{
-		ID: paste.ID,
-		Hash: hash,
-	})
-
-	if err != nil {
-		log.Println("could not create mapping:", err)
+	created := true
+	var h string
+	for created {
+		h = hash.Hash()
+		created = database.ExistsMapping(db, h)
+		if !created {
+			_, err = database.CreateMapping(db, database.Mapping{
+				ID: paste.ID,
+				Hash: h,
+			})
+			if err != nil {
+				log.Println("Error saving mapping to db for pasteID:", paste.ID)
+			}
+			created = false
+		}
 	}
-
-	log.Printf("generated url: pasteit.com/%s", hash)
 }
 
 func main() {
