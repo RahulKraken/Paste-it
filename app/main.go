@@ -99,6 +99,26 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // paste handlers
 
+// list paste handler
+func listPastesHandler(w http.ResponseWriter, r *http.Request) {
+	// get the id path variable
+	vars := mux.Vars(r)
+	log.Println("id:", vars["id"])
+	id, err := strconv.Atoi(vars["id"]); if err != nil {
+		panic(err.Error())
+	}
+	pastes := database.ListPastes(db, id)
+	log.Println(pastes)
+
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(pastes)
+	if err != nil {
+		log.Println("Error encoding results:", err)
+		http.Error(w, "Error encoding results", http.StatusInternalServerError)
+		return
+	}
+}
+
 // create new paste
 func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
@@ -212,6 +232,7 @@ func main() {
 	r.HandleFunc("/api/user/{id}", deleteUserHandler).Methods("DELETE")
 
 	// paste handlers
+	r.HandleFunc("/api/pastes/{id}", listPastesHandler).Methods("GET")
 	r.HandleFunc("/api/paste", createPasteHandler).Methods("POST")
 	r.HandleFunc("/api/paste", updatePasteHandler).Methods("PUT")
 	r.HandleFunc("/api/paste/{id}", getPasteHandler).Methods("GET")

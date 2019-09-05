@@ -104,6 +104,32 @@ func DeleteUser(db *sql.DB, id int) {
 
 // CRUD application methods for paste table
 
+// ListPastes - list all pastes with userID = ID
+func ListPastes(db *sql.DB, userID int) []Paste {
+	results, err := db.Query("SELECT * FROM paste WHERE user_id = ?", userID)
+	if err != nil {
+		log.Println("Error fetching pastes for user:", userID, "err:", err)
+		panic(err.Error())
+	}
+
+	// var to hold data
+	var pastes []Paste
+	var paste Paste
+
+	for results.Next() {
+		err = results.Scan(&paste.ID, &paste.UserID, &paste.Title, &paste.Content)
+		if err != nil {
+			log.Println("Error parsing results:", err)
+			panic(err.Error())
+		}
+
+		// append to slice
+		pastes = append(pastes, paste)
+	}
+
+	return pastes
+}
+
 // CreatePaste - create new paste
 func CreatePaste(db *sql.DB, paste Paste) {
 	insert, err := db.Query("INSERT INTO paste VALUES (?, ?, ?, ?)", paste.ID, paste.UserID, paste.Title, paste.Content)
