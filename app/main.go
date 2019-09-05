@@ -18,6 +18,23 @@ var db *sql.DB
 var err error
 
 // user handlers
+
+// list users
+func listUsersHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Hit", "/api/user", "Method:", r.Method)
+	users := database.ListUsers(db)
+	log.Println(users)
+
+	encoder := json.NewEncoder(w)
+
+	err := encoder.Encode(users)
+	if err != nil {
+		log.Println("Error encoding result:", err)
+		http.Error(w, "Something wrong occured while preparing your result", http.StatusInternalServerError)
+		return
+	}
+}
+
 // create new user
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Hit", "/api/user", "Method:", r.Method)
@@ -188,6 +205,7 @@ func main() {
 	r := mux.NewRouter()
 
 	// user handlers
+	r.HandleFunc("/api/user", listUsersHandler).Methods("GET")
 	r.HandleFunc("/api/user", createUserHandler).Methods("POST")
 	r.HandleFunc("/api/user", updateUserHandler).Methods("PUT")
 	r.HandleFunc("/api/user/{id}", getUserHandler).Methods("GET")

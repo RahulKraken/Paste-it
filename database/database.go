@@ -27,6 +27,34 @@ type Mapping struct {
 
 // CRUD application methods for user table
 
+// ListUsers - list all available users
+func ListUsers(db *sql.DB) []User {
+	results, err := db.Query("SELECT * FROM user")
+	if err != nil {
+		// could use log.Panicln() but still
+		log.Println("Error fetching user list:", err)
+		panic(err.Error())
+	}
+
+	// to hold the resutls
+	var users []User
+	var user User
+	for results.Next() {
+		// scan tuple into the user var
+		err = results.Scan(&user.ID, &user.UserName)
+		if err != nil {
+			log.Println("Error parsing user:", err)
+			// return whatever's parsed so far
+			return users
+		}
+
+		// append to users slice
+		users = append(users, user)
+	}
+
+	return users
+}
+
 // CreateUser - create new user
 func CreateUser(db *sql.DB, user User) {
 	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", user.ID, user.UserName)
