@@ -129,10 +129,10 @@ func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(paste)
 	log.Println("inserting into db")
-	database.CreatePaste(db, paste)
+	id := database.CreatePaste(db, paste)
 
 	log.Println("creating mapping")
-	createMapping(paste)
+	createMapping(id)
 }
 
 // update existing paste
@@ -182,7 +182,7 @@ func deletePasteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // create mapping
-func createMapping(paste database.Paste) {
+func createMapping(id int) {
 	created := true
 	var h string
 	for created {
@@ -190,11 +190,11 @@ func createMapping(paste database.Paste) {
 		created = database.ExistsMapping(db, h)
 		if !created {
 			_, err = database.CreateMapping(db, database.Mapping{
-				ID: paste.ID,
+				ID: id,
 				Hash: h,
 			})
 			if err != nil {
-				log.Println("Error saving mapping to db for pasteID:", paste.ID)
+				log.Println("Error saving mapping to db for pasteID:", id)
 			}
 			created = false
 		}

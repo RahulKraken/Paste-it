@@ -145,12 +145,32 @@ func ListPastes(db *sql.DB, userID int) []Paste {
 }
 
 // CreatePaste - create new paste
-func CreatePaste(db *sql.DB, paste Paste) {
-	insert, err := db.Query("INSERT INTO paste VALUES (?, ?, ?, ?)", paste.ID, paste.UserID, paste.Title, paste.Content)
+func CreatePaste(db *sql.DB, paste Paste) int {
+	// get cnt of pastes
+	res, err := db.Query("SELECT COUNT(id) FROM paste")
 	if err != nil {
+		log.Println("Error creating paste")
 		panic(err.Error())
 	}
+
+	var cnt int
+	for res.Next() {
+		res.Scan(&cnt)
+	}
+
+	log.Println("cnt:", cnt)
+
+	// insert paste into db
+	insert, err := db.Query("INSERT INTO paste VALUES (?, ?, ?, ?)", cnt + 1, paste.UserID, paste.Title, paste.Content)
+	if err != nil {
+		log.Println("Error creating paste")
+		panic(err.Error())
+	}
+
+	log.Println("inserting into db:", cnt + 1, paste)
 	insert.Close()
+
+	return cnt + 1
 }
 
 // UpdatePaste - update existing paste
