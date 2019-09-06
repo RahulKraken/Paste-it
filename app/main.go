@@ -21,7 +21,7 @@ var err error
 
 // list users
 func listUsersHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Hit", "/api/user", "Method:", r.Method)
+	log.Println("Hit", "/api/user", r.Method)
 	users := database.ListUsers(db)
 	log.Println(users)
 
@@ -37,7 +37,7 @@ func listUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 // create new user
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Hit", "/api/user", "Method:", r.Method)
+	log.Println("Hit", "/api/user", r.Method)
 	decoder := json.NewDecoder(r.Body)
 	var user database.User
 	err := decoder.Decode(&user)
@@ -52,6 +52,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // update existing user
 func updateUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/user", r.Method)
 	decoder := json.NewDecoder(r.Body)
 	var user database.User
 	err := decoder.Decode(&user)
@@ -66,6 +67,7 @@ func updateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // get user with id
 func getUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/user/{id}", r.Method)
 	vars := mux.Vars(r)
 	log.Println("id:", vars["id"])
 	id, err := strconv.Atoi(vars["id"])
@@ -87,6 +89,7 @@ func getUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // delete user with id
 func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/user/{id}", r.Method)
 	vars := mux.Vars(r)
 	fmt.Println("id:", vars["id"])
 	id, err := strconv.Atoi(vars["id"])
@@ -101,6 +104,7 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // list paste handler
 func listPastesHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/pastes/{id}", r.Method)
 	// get the id path variable
 	vars := mux.Vars(r)
 	log.Println("id:", vars["id"])
@@ -121,6 +125,7 @@ func listPastesHandler(w http.ResponseWriter, r *http.Request) {
 
 // create new paste
 func createPasteHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/paste", r.Method)
 	decoder := json.NewDecoder(r.Body)
 	var paste database.Paste
 	err := decoder.Decode(&paste); if err != nil {
@@ -137,19 +142,20 @@ func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 
 // update existing paste
 func updatePasteHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/paste", r.Method)
 	decoder := json.NewDecoder(r.Body)
 	var paste database.Paste
 	err := decoder.Decode(&paste); if err != nil {
-		panic(err.Error())
+		log.Panicln("error parsing:", paste)
 	}
 
-	log.Println(paste)
-	log.Println("updating in db")
+	log.Println("updating in db:", paste)
 	database.UpdatePaste(db, paste)
 }
 
 // get paste with id
 func getPasteHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/paste/{id}", r.Method)
 	vars := mux.Vars(r)
 	log.Println("paste id:", vars["id"])
 	id, err := strconv.Atoi(vars["id"]); if err != nil {
@@ -169,6 +175,7 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 
 // delete paste with id
 func deletePasteHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /api/paste/{id}", r.Method)
 	vars := mux.Vars(r)
 	log.Println("paste id:", vars["id"])
 	id, err := strconv.Atoi(vars["id"]); if err != nil {
