@@ -57,12 +57,26 @@ func ListUsers(db *sql.DB) []User {
 
 // CreateUser - create new user
 func CreateUser(db *sql.DB, user User) {
-	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", user.ID, user.UserName)
+	// get count
+	res, err := db.Query("SELECT COUNT(id) FROM user")
 	if err != nil {
-		log.Println("db error:", err)
+		log.Println("Error creating user")
 		panic(err.Error())
 	}
-	log.Println("Inserting into db:", user)
+
+	var cnt int
+	for res.Next() {
+		res.Scan(&cnt)
+	}
+
+	log.Println("cnt:", cnt)
+
+	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", cnt + 1, user.UserName)
+	if err != nil {
+		log.Println("Error creating user")
+		panic(err.Error())
+	}
+	log.Println("inserting into db:", cnt + 1, user)
 	insert.Close()
 }
 
