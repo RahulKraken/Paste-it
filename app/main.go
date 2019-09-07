@@ -47,7 +47,14 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// if everything goes fine then persist user into database
 	log.Println("sending to db:", user)
-	database.CreateUser(db, user)
+	id := database.CreateUser(db, user)
+
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(id)
+	if err != nil {
+		log.Println("error retreiving id", err)
+		http.Error(w, "Error retreiving id", http.StatusInternalServerError)
+	}
 }
 
 // update existing user

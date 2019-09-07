@@ -56,7 +56,7 @@ func ListUsers(db *sql.DB) []User {
 }
 
 // CreateUser - create new user
-func CreateUser(db *sql.DB, user User) {
+func CreateUser(db *sql.DB, user User) int {
 	// get count
 	res, err := db.Query("SELECT COUNT(id) FROM user")
 	if err != nil {
@@ -78,6 +78,8 @@ func CreateUser(db *sql.DB, user User) {
 	}
 	log.Println("inserting into db:", cnt + 1, user)
 	insert.Close()
+
+	return cnt + 1
 }
 
 // GetUser - get user with id
