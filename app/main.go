@@ -144,7 +144,22 @@ func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 	id := database.CreatePaste(db, paste)
 
 	log.Println("creating mapping")
-	createMapping(id)
+	hash := createMapping(id)
+
+	encoder := json.NewEncoder(w)
+	details := struct {
+		ID		int		`json:"id"`
+		Hash	string	`json:"hash"`
+	} {
+		ID: id,
+		Hash: hash,
+	}
+
+	err = encoder.Encode(details)
+	if err != nil {
+		log.Println("Error getting paste details", err)
+		http.Error(w, "Error getting paste details", http.StatusInternalServerError)
+	}
 }
 
 // update existing paste
@@ -196,7 +211,7 @@ func deletePasteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // create mapping
-func createMapping(id int) {
+func createMapping(id int) string {
 	created := true
 	var h string
 	for created {
@@ -213,6 +228,8 @@ func createMapping(id int) {
 			created = false
 		}
 	}
+
+	return h
 }
 
 func main() {
