@@ -8,7 +8,9 @@ import (
 // User struct
 type User struct {
 	ID		 int 	`json:"id"`
+	Email	 string	`json:"email"`
 	UserName string `json:"user_name"`
+	Pasword  string `json:"pasword"`
 }
 
 // Paste struct
@@ -71,7 +73,7 @@ func CreateUser(db *sql.DB, user User) int {
 
 	log.Println("cnt:", cnt)
 
-	insert, err := db.Query("INSERT INTO user VALUES(?, ?)", cnt + 1, user.UserName)
+	insert, err := db.Query("INSERT INTO user VALUES(?, ?, ?, ?)", cnt + 1, user.Email, user.UserName, user.Pasword)
 	if err != nil {
 		log.Println("Error creating user")
 		panic(err.Error())
