@@ -31,14 +31,14 @@ type Mapping struct {
 
 // ListUsers - list all available users
 func ListUsers(db *sql.DB) []User {
-	results, err := db.Query("SELECT * FROM user")
+	results, err := db.Query("SELECT id, user_name FROM user")
 	if err != nil {
 		// could use log.Panicln() but still
 		log.Println("Error fetching user list:", err)
 		panic(err.Error())
 	}
 
-	// to hold the resutls
+	// to hold the results
 	var users []User
 	var user User
 	for results.Next() {
