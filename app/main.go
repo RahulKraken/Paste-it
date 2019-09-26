@@ -17,6 +17,20 @@ import (
 var db *sql.DB
 var err error
 
+// auth handlers
+func signUpHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO: check if email exists
+	// TODO: check if username exists
+	// TODO: create user
+	// TODO: generate JWT
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO: check if username exists
+	// TODO: check if psd matches
+	// TODO: generate JWT
+}
+
 // user handlers
 
 // list users
@@ -30,7 +44,7 @@ func listUsersHandler(w http.ResponseWriter, r *http.Request) {
 	err := encoder.Encode(users)
 	if err != nil {
 		log.Println("Error encoding result:", err)
-		http.Error(w, "Something wrong occured while preparing your result", http.StatusInternalServerError)
+		http.Error(w, "Something wrong occurred while preparing your result", http.StatusInternalServerError)
 		return
 	}
 }
@@ -52,8 +66,8 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(w)
 	err = encoder.Encode(id)
 	if err != nil {
-		log.Println("error retreiving id", err)
-		http.Error(w, "Error retreiving id", http.StatusInternalServerError)
+		log.Println("error retrieving id", err)
+		http.Error(w, "Error retrieving id", http.StatusInternalServerError)
 	}
 }
 
@@ -144,15 +158,15 @@ func createPasteHandler(w http.ResponseWriter, r *http.Request) {
 	id := database.CreatePaste(db, paste)
 
 	log.Println("creating mapping")
-	hash := createMapping(id)
+	h := createMapping(id)
 
 	encoder := json.NewEncoder(w)
 	details := struct {
 		ID		int		`json:"id"`
-		Hash	string	`json:"hash"`
+		Hash	string	`json:"h"`
 	} {
-		ID: id,
-		Hash: hash,
+		ID:   id,
+		Hash: h,
 	}
 
 	err = encoder.Encode(details)
@@ -246,14 +260,16 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	log.Println("Database connection successfull...")
+	log.Println("Database connection successful...")
 
 	defer db.Close()
 
-	fmt.Println("testing db here ->", db)
-
 	// mux router
 	r := mux.NewRouter()
+
+	// auth handlers
+	r.HandleFunc("/login", loginHandler).Methods("POST")
+	r.HandleFunc("/signup", signUpHandler).Methods("POST")
 
 	// user handlers
 	r.HandleFunc("/api/user", listUsersHandler).Methods("GET")

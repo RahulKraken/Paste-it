@@ -27,6 +27,12 @@ type Mapping struct {
 	Hash	string	`json:"paste_hash"`
 }
 
+// LoginCredentials struct
+type LoginCredentials struct {
+	Username 	string	 	`json:"username"`
+	Pasword 	string		`json:"pasword"`
+}
+
 // CRUD application methods for user table
 
 // ListUsers - list all available users
@@ -68,7 +74,7 @@ func CreateUser(db *sql.DB, user User) int {
 
 	var cnt int
 	for res.Next() {
-		res.Scan(&cnt)
+		_ = res.Scan(&cnt)
 	}
 
 	log.Println("cnt:", cnt)
@@ -79,7 +85,7 @@ func CreateUser(db *sql.DB, user User) int {
 		panic(err.Error())
 	}
 	log.Println("inserting into db:", cnt + 1, user)
-	insert.Close()
+	_ = insert.Close()
 
 	return cnt + 1
 }
@@ -159,7 +165,7 @@ func CreatePaste(db *sql.DB, paste Paste) int {
 
 	var cnt int
 	for res.Next() {
-		res.Scan(&cnt)
+		_ = res.Scan(&cnt)
 	}
 
 	log.Println("cnt:", cnt)
@@ -172,7 +178,7 @@ func CreatePaste(db *sql.DB, paste Paste) int {
 	}
 
 	log.Println("inserting into db:", cnt + 1, paste)
-	insert.Close()
+	_ = insert.Close()
 
 	return cnt + 1
 }
@@ -268,4 +274,46 @@ func ExistsMapping(db *sql.DB, h string) bool {
 	// log `h` is already in use
 	log.Println(h, "is already being used.")
 	return true
+}
+
+// ExistsEmail - check if account with email exists
+func ExistsEmail(db *sql.DB, email string) bool {
+	res, err := db.Query("SELECT * FROM user WHERE email = ?", email)
+	if err != nil {
+		log.Println(err)
+	}
+	if res.Next() {
+		return true
+	}
+	return false
+}
+
+// ExistsUsername - check if account with username exists
+func ExistsUsername(db *sql.DB, username string) bool {
+	res, err := db.Query("SELECT * FROM user WHERE user_name = ?", username)
+	if err != nil {
+		log.Println(err)
+	}
+	if res.Next() {
+		return true
+	}
+	return false
+}
+
+// MatchCredentials - check if password matches
+func MatchCredentials(db *sql.DB, data LoginCredentials) bool {
+	res, err := db.Query("SELECT pasword from USER WHERE user_name = ?", data.Username)
+	if err != nil {
+		log.Println("error verifying pasword", err)
+	}
+
+	if res.Next() {
+		var psd string
+		_ = res.Scan(&psd)
+		if psd == data.Pasword {
+			return true
+		}
+	}
+
+	return false
 }
