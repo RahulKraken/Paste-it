@@ -19,10 +19,54 @@ var err error
 
 // auth handlers
 func signUpHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: check if email exists
-	// TODO: check if username exists
-	// TODO: create user
-	// TODO: generate JWT
+	log.Println("Hit", "/signup", r.Method)
+	var user database.User
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&user); if err != nil {
+		log.Println("Could not parse request", err)
+	}
+
+	// check if email already exists
+	b := database.ExistsEmail(db, user.Email)
+	if b {
+		// email already exists
+		log.Println("User exists")
+		http.Error(w, "user with this email already exists", http.StatusBadRequest)
+		return
+	}
+
+	// check if username exists
+	b = database.ExistsUsername(db, user.UserName)
+	if b {
+		// username already in use
+		log.Println("Username is taken")
+		http.Error(w, "Username is already in use", http.StatusBadRequest)
+		return
+	}
+
+	// create user
+	_ = database.CreateUser(db, user)
+
+	// generate and send JWT
+	token, err := hash.GenerateJWT(user.UserName)
+	if err != nil {
+		log.Println("Error generating JWT")
+		http.Error(w, "Something wrong happened", http.StatusInternalServerError)
+	}
+
+	// anonymous struct to send token
+	response := struct {
+		AuthToken		string		`json:"token"`
+	}{
+		AuthToken:	token,
+	}
+
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(response)
+	if err != nil {
+		log.Println("Error sending JWT token")
+		http.Error(w, "Something wrong happened", http.StatusInternalServerError)
+	}
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
