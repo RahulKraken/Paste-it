@@ -26,9 +26,49 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: check if username exists
-	// TODO: check if psd matches
-	// TODO: generate JWT
+	log.Println("Hit", "/login", r.Method)
+	var data database.LoginCredentials
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&data); if err != nil {
+		log.Println("Could not parse request", err)
+	}
+
+	// check if username exists
+	b := database.ExistsUsername(db, data.Username)
+	if !b {
+		log.Println("User does not exist")
+		http.Error(w, "User does not exist", http.StatusNotFound)
+		return
+	}
+
+	// check if credentials match
+	b = database.MatchCredentials(db, data)
+	if !b {
+		log.Println("Incorrect password")
+		http.Error(w, "Incorrect password", http.StatusBadRequest)
+		return
+	}
+
+	// generate and send jwt
+	token, err := hash.GenerateJWT(data.Username)
+	if err != nil {
+		log.Println("Error generating JWT")
+		http.Error(w, "Something wrong happened", http.StatusInternalServerError)
+	}
+
+	// anonymous struct to send token
+	response := struct {
+		AuthToken		string		`json:"token"`
+	}{
+		AuthToken:	token,
+	}
+
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(response)
+	if err != nil {
+		log.Println("Error sending JWT token")
+		http.Error(w, "Something wrong happened", http.StatusInternalServerError)
+	}
 }
 
 // user handlers
@@ -286,8 +326,8 @@ func main() {
 	r.HandleFunc("/api/paste/{id}", deletePasteHandler).Methods("DELETE")
 
 	// listen and serve
-	err = http.ListenAndServe(":5000", r)
 	fmt.Println("Server started on port: 5000")
+	err = http.ListenAndServe(":5000", r)
 	if err != nil {
 		panic(err.Error())
 	}
