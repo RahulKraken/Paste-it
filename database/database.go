@@ -211,6 +211,23 @@ func GetPaste(db *sql.DB, id int) Paste {
 	return paste
 }
 
+// GetPasteIdFromHash - get pasteId corresponding to given hash
+func GetPasteIdFromHash(db *sql.DB, hash string) int {
+	val, err := db.Query("SELECT paste_id FROM mapping WHERE paste_hash = ?", hash)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var id int
+	for val.Next() {
+		err = val.Scan(&id); if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	return id
+}
+
 // DeletePaste - delete paste with id
 func DeletePaste(db *sql.DB, id int) {
 	_, err := db.Query("DELETE FROM paste WHERE id = ?", id)

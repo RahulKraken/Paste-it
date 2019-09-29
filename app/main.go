@@ -325,6 +325,26 @@ func getPasteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// get paste with hash
+func fetchPasteWithHash(w http.ResponseWriter, r *http.Request) {
+	log.Println("HIT: /paste/{hash}", r.Method)
+	vars := mux.Vars(r)
+	log.Println("paste hash:", vars["hash"])
+
+	// get id associated with given hash
+	id := database.GetPasteIdFromHash(db, vars["hash"])
+
+	// fetch the paste from db
+	paste := database.GetPaste(db, id)
+
+	// return the content as text
+	_, err = fmt.Fprintf(w, paste.Content)
+	if err != nil {
+		log.Println("Error sending response:", err)
+		http.Error(w, "Error fetching content", http.StatusInternalServerError)
+	}
+}
+
 // delete paste with id
 func deletePasteHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("HIT: /api/paste/{id}", r.Method)
@@ -395,6 +415,7 @@ func main() {
 	r.Handle("/api/user/{id}", handleAuth(deleteUserHandler)).Methods("DELETE")
 
 	// paste handlers
+	r.HandleFunc("/paste/{hash}", fetchPasteWithHash).Methods("GET")
 	r.Handle("/api/pastes/{id}", handleAuth(listPastesHandler)).Methods("GET")
 	r.Handle("/api/paste", handleAuth(createPasteHandler)).Methods("POST")
 	r.Handle("/api/paste", handleAuth(updatePasteHandler)).Methods("PUT")
