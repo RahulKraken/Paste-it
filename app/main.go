@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"fmt"
 	"log"
@@ -18,6 +19,36 @@ var db *sql.DB
 var err error
 
 // auth handlers
+
+// authentication middleware
+func handleAuth(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header["Token"] != nil {
+			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (i interface{}, e error) {
+				_, ok := token.Method.(*jwt.SigningMethodHMAC); if !ok {
+					return nil, fmt.Errorf("something wrong happened")
+				}
+
+				return hash.MySigningKey, nil
+			})
+
+			if err != nil {
+				log.Println("Something went wrong:", err.Error())
+				http.Error(w, "Could not authenticate", http.StatusUnauthorized)
+				return
+			}
+
+			if token.Valid {
+				endpoint(w, r)
+			}
+		} else {
+			log.Println("Unauthorized")
+			http.Error(w, "Error authenticating", http.StatusUnauthorized)
+		}
+	})
+}
+
+// signUpHandler - handles signup requests
 func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Hit", "/signup", r.Method)
 	var user database.User
@@ -69,6 +100,7 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// loginHandler - handles login requests
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Hit", "/login", r.Method)
 	var data database.LoginCredentials
@@ -356,18 +388,18 @@ func main() {
 	r.HandleFunc("/signup", signUpHandler).Methods("POST")
 
 	// user handlers
-	r.HandleFunc("/api/user", listUsersHandler).Methods("GET")
-	r.HandleFunc("/api/user", createUserHandler).Methods("POST")
-	r.HandleFunc("/api/user", updateUserHandler).Methods("PUT")
-	r.HandleFunc("/api/user/{id}", getUserHandler).Methods("GET")
-	r.HandleFunc("/api/user/{id}", deleteUserHandler).Methods("DELETE")
+	r.Handle("/api/user", handleAuth(listUsersHandler)).Methods("GET")
+	r.Handle("/api/user", handleAuth(createUserHandler)).Methods("POST")
+	r.Handle("/api/user", handleAuth(updateUserHandler)).Methods("PUT")
+	r.Handle("/api/user/{id}", handleAuth(getUserHandler)).Methods("GET")
+	r.Handle("/api/user/{id}", handleAuth(deleteUserHandler)).Methods("DELETE")
 
 	// paste handlers
-	r.HandleFunc("/api/pastes/{id}", listPastesHandler).Methods("GET")
-	r.HandleFunc("/api/paste", createPasteHandler).Methods("POST")
-	r.HandleFunc("/api/paste", updatePasteHandler).Methods("PUT")
-	r.HandleFunc("/api/paste/{id}", getPasteHandler).Methods("GET")
-	r.HandleFunc("/api/paste/{id}", deletePasteHandler).Methods("DELETE")
+	r.Handle("/api/pastes/{id}", handleAuth(listPastesHandler)).Methods("GET")
+	r.Handle("/api/paste", handleAuth(createPasteHandler)).Methods("POST")
+	r.Handle("/api/paste", handleAuth(updatePasteHandler)).Methods("PUT")
+	r.Handle("/api/paste/{id}", handleAuth(getPasteHandler)).Methods("GET")
+	r.Handle("/api/paste/{id}", handleAuth(deletePasteHandler)).Methods("DELETE")
 
 	// listen and serve
 	fmt.Println("Server started on port: 5000")

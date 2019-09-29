@@ -92,7 +92,7 @@ func CreateUser(db *sql.DB, user User) int {
 
 // GetUser - get user with id
 func GetUser(db *sql.DB, id int) User {
-	data, err := db.Query("SELECT * FROM user WHERE id = ? LIMIT 1", id)
+	data, err := db.Query("SELECT id, user_name FROM user WHERE id = ? LIMIT 1", id)
 	if err != nil {
 		panic(err.Error())
 	}
