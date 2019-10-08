@@ -3,15 +3,34 @@ import './App.css';
 
 // components
 import Login from './components/Login'
+import Dashboard from './components/Dashboard'
 
 class App extends React.Component {
 
+  // login state
+  state = {
+    loginStatus: false
+  }
+
+  // method to modify state
+  isLoggedIn = (val) => {
+    this.setState({ loginStatus: val })
+  }
+
   render() {
-    return (
-      <div className="App">
-        <Login />
-      </div>
-    );
+    if (!this.state.loginStatus) {
+      return (
+        <div className="App">
+          <Login navigator={ this.isLoggedIn }/>
+        </div>
+      );
+    } else {
+      return (
+        <div className="App">
+          <Dashboard/>
+        </div>
+      )
+    }
   }
 }
 

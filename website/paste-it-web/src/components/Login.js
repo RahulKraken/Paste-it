@@ -10,7 +10,8 @@ export class Login extends Component {
   // login data state
   state = {
     username: '',
-    pasword: ''
+    pasword: '',
+    email: ''
   }
 
   // signup btn style
@@ -41,10 +42,16 @@ export class Login extends Component {
         console.log(res.data)
         // put token in local storage
         window.localStorage.setItem("Token", res.data.token)
+        this.sendToDashboard();
       })
       .catch(err => {
         console.log(err)
+        alert("make sure username and password are correct!!!")
       })
+  }
+
+  sendToDashboard() {
+    this.props.navigator(true)
   }
 
   render() {
