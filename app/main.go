@@ -4,6 +4,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"fmt"
+	"github.com/rs/cors"
 	"log"
 	"strconv"
 	"net/http"
@@ -424,7 +425,8 @@ func main() {
 
 	// listen and serve
 	fmt.Println("Server started on port: 5000")
-	err = http.ListenAndServe(":5000", r)
+	handler := cors.Default().Handler(r)
+	err = http.ListenAndServe(":5000", handler)
 	if err != nil {
 		panic(err.Error())
 	}

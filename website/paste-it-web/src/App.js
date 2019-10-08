@@ -4,12 +4,15 @@ import './App.css';
 // components
 import Login from './components/Login'
 
-function App() {
-  return (
-    <div className="App">
-      <Login />
-    </div>
-  );
+class App extends React.Component {
+
+  render() {
+    return (
+      <div className="App">
+        <Login />
+      </div>
+    );
+  }
 }
 
 export default App;
