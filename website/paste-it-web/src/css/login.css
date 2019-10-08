@@ -1,0 +1,6 @@
+.submitBtnStyle {
+    background: transparent linear-gradient(180deg, #2EA5FF 0%, #008DF9 100%) 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 39px;
+    opacity: 1;
+  }
