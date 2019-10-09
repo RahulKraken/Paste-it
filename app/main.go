@@ -1,18 +1,17 @@
 package main
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/mux"
-	"fmt"
-	"github.com/rs/cors"
-	"log"
-	"strconv"
-	"net/http"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/RahulKraken/Paste-it/database"
 	"github.com/RahulKraken/Paste-it/hash"
+	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
-	"database/sql"
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
+	"strconv"
 )
 
 // database connection
@@ -21,8 +20,32 @@ var err error
 
 // auth handlers
 
+// CORS middleware
+// CORSDecorator - it will apply the CORS headers to the mux Router
+type CORSDecorator struct {
+	R *mux.Router
+}
+
+func (c *CORSDecorator) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	origin := r.Header.Get("Origin")
+	// set the headers
+	if origin != "" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Accept-Language, Content-Type, Token")
+	}
+
+	// if preflight OPTIONS request then stop here
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	c.R.ServeHTTP(w, r)
+}
+
 // authentication middleware
 func handleAuth(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
+	log.Println("Authenticating...")
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Token"] != nil {
 			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (i interface{}, e error) {
@@ -423,10 +446,11 @@ func main() {
 	r.Handle("/api/paste/{id}", handleAuth(getPasteHandler)).Methods("GET")
 	r.Handle("/api/paste/{id}", handleAuth(deletePasteHandler)).Methods("DELETE")
 
-	// listen and serve
 	fmt.Println("Server started on port: 5000")
-	handler := cors.Default().Handler(r)
-	err = http.ListenAndServe(":5000", handler)
+
+	// listen and serve
+	// using CORS middleware on the router
+	err = http.ListenAndServe(":5000", &CORSDecorator{r})
 	if err != nil {
 		panic(err.Error())
 	}

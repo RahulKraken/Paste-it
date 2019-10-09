@@ -1,69 +1,16 @@
 import React, { Component } from "react";
-import axios from "axios";
-import "../css/login.css";
 
-// images
-// import tick from '../img/checked.png'
-
-export class Login extends Component {
-  // login data state
-  state = {
-    username: "",
-    pasword: "",
-    email: ""
-  };
-
-  // signup btn style
-  btnSignupStyle = {
-    marginLeft: "16px"
-  };
-
-  // handle changes to text
-  handleTfChange = event => {
-    this.setState({ username: event.target.value });
-  };
-
-  // handle password changes
-  handlePsdChange = event => {
-    this.setState({ pasword: event.target.value });
-  };
-
-  // login handler
-  handleLogin = event => {
-    event.preventDefault();
-    console.log("Login now clicked!!!");
-    console.log(this.state);
-    axios
-      .post(`http://localhost:5000/login`, {
-        username: this.state.username,
-        pasword: this.state.pasword
-      })
-      .then(res => {
-        console.log(res.data);
-        // put token in local storage
-        window.localStorage.setItem("Token", res.data.token);
-        this.sendToDashboard();
-      })
-      .catch(err => {
-        console.log(err);
-        alert("make sure username and password are correct!!!");
-      });
-  };
-
-  sendToDashboard() {
-    this.props.navigator(true);
-  }
-
+export class Signup extends Component {
   render() {
     return (
       <div style={this.containerStyle}>
         <h1 className="title text-center">Paste it</h1>
         <div className="row">
-          <p className="col-4"></p>
+          <p className="col-4"/>
           <h3 className="text-left col">Welcome back :)</h3>
         </div>
         <div className="row">
-          <p className="col-4"></p>
+          <p className="col-4"/>
           <p className="col-4">
             <small>
               To keep connected with us, please login with your username and
@@ -72,7 +19,7 @@ export class Login extends Component {
           </p>
         </div>
         <div className="row">
-          <p className="col-4"></p>
+          <p className="col-4"/>
           <form className="col-4">
             <div className="form-group">
               <label htmlFor="inputUsername">Username</label>
@@ -117,4 +64,4 @@ export class Login extends Component {
   }
 }
 
-export default Login;
+export default Signup;
