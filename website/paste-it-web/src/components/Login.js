@@ -48,8 +48,14 @@ export class Login extends Component {
       });
   };
 
+  handleCreateAccount = (event) => {
+    event.preventDefault()
+    console.log("redirecting to signup page")
+    this.props.signupstatusNav(true)
+  }
+
   sendToDashboard() {
-    this.props.navigator(true)
+    this.props.loginstatusNav(true)
   }
 
   render() {

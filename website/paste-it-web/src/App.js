@@ -4,12 +4,14 @@ import './App.css';
 // components
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
+import Signup from './components/Signup'
 
 class App extends React.Component {
 
   // login state
   state = {
-    loginStatus: true
+    loginStatus: true,
+    signupStatus: false
   }
 
   // method to modify state
@@ -17,17 +19,28 @@ class App extends React.Component {
     this.setState({ loginStatus: val })
   }
 
+  // method to modify signup state
+  wantsSignup = (val) => {
+    this.setState({ signupStatus: val })
+  }
+
   render() {
-    if (!this.state.loginStatus) {
+    if (this.state.signupStatus) {
       return (
         <div className="App">
-          <Login navigator={ this.isLoggedIn }/>
+          <Signup loginstatusNav={ this.isLoggedIn } signupstatusNav={ this.wantsSignup }/>
+        </div>
+      )
+    } else if (!this.state.loginStatus) {
+      return (
+        <div className="App">
+          <Login loginstatusNav={ this.isLoggedIn } signupstatusNav={ this.wantsSignup }/>
         </div>
       );
     } else {
       return (
         <div className="App">
-          <Dashboard navigator={ this.isLoggedIn }/>
+          <Dashboard loginstatusNav={ this.isLoggedIn } signupstatusNav={ this.wantsSignup }/>
         </div>
       )
     }

@@ -1,16 +1,45 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 export class Signup extends Component {
+
+  // state for signup
+  state = {
+    email: "",
+    username: "",
+    pasword: ""
+  }
+
+  // login btn style
+  btnLoginStyle = {
+    marginLeft: "16px"
+  };
+
+  // handle create account
+  handleCreateAccount = (event) => {
+    event.preventDefault()
+    console.log("Creating account")
+    axios.post("http://localhost:5000/signup", this.state)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  // handle login instead
+
   render() {
     return (
       <div style={this.containerStyle}>
         <h1 className="title text-center">Paste it</h1>
         <div className="row">
-          <p className="col-4"/>
+          <p className="col-4" />
           <h3 className="text-left col">Welcome back :)</h3>
         </div>
         <div className="row">
-          <p className="col-4"/>
+          <p className="col-4" />
           <p className="col-4">
             <small>
               To keep connected with us, please login with your username and
@@ -19,8 +48,18 @@ export class Signup extends Component {
           </p>
         </div>
         <div className="row">
-          <p className="col-4"/>
+          <p className="col-4" />
           <form className="col-4">
+            <div className="form-group">
+              <label htmlFor="inputEmail">Email</label>
+              <input
+                type="text"
+                className="form-control"
+                id="inputEmail"
+                aria-describedby="emailHelp"
+                placeholder="Email"
+              />
+            </div>
             <div className="form-group">
               <label htmlFor="inputUsername">Username</label>
               <input
@@ -45,17 +84,17 @@ export class Signup extends Component {
             <button
               type="submit"
               className="btn btn-primary"
-              onClick={this.handleLogin}
+              onClick={this.handleCreateAccount}
             >
-              Login now
+              Create Account
             </button>
             <button
               type="submit"
               className="btn btn-outline-secondary"
-              style={this.btnSignupStyle}
-              onClick={this.handleCreateAccount}
+              style={this.btnLoginStyle}
+              onClick={this.handleLoginInstead}
             >
-              Create Account
+              Login instead
             </button>
           </form>
         </div>

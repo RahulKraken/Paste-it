@@ -26,7 +26,7 @@ export class Dashboard extends Component {
       })
       .catch(err => {
         console.log(err)
-        this.props.navigator(false)
+        this.props.loginstatusNav(false)
       });
   };
 
