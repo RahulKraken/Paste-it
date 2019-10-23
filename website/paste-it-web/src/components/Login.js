@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import axios from "axios";
 import "../css/login.css";
 
-// images
-// import tick from '../img/checked.png'
-
 export class Login extends Component {
   // login data state
   state = {
@@ -20,38 +17,39 @@ export class Login extends Component {
 
   // handle changes to text
   handleTfChange = event => {
-    this.setState({ username: event.target.value });
+    this.setState({ username: event.target.value })
   };
 
   // handle password changes
   handlePsdChange = event => {
-    this.setState({ pasword: event.target.value });
+    this.setState({ pasword: event.target.value })
   };
 
   // login handler
   handleLogin = event => {
     event.preventDefault();
-    console.log("Login now clicked!!!");
-    console.log(this.state);
+    console.log("Login now clicked!!!")
+    console.log(this.state)
     axios
       .post(`http://localhost:5000/login`, {
         username: this.state.username,
         pasword: this.state.pasword
       })
       .then(res => {
-        console.log(res.data);
+        console.log(res.data)
         // put token in local storage
-        window.localStorage.setItem("Token", res.data.token);
+        window.localStorage.setItem("token", res.data.token)
+        window.localStorage.setItem("userid", res.data.id)
         this.sendToDashboard();
       })
       .catch(err => {
-        console.log(err);
-        alert("make sure username and password are correct!!!");
+        console.log(err)
+        alert("make sure username and password are correct!!!")
       });
   };
 
   sendToDashboard() {
-    this.props.navigator(true);
+    this.props.navigator(true)
   }
 
   render() {

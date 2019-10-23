@@ -16,20 +16,22 @@ export class Dashboard extends Component {
    */
   fetchItemList = () => {
     axios
-      .get(`http://localhost:5000/api/paste/1`, {
+      .get(`http://localhost:5000/api/paste/` + window.localStorage.getItem("userid"), {
         headers: {
           Token: window.localStorage.getItem("Token")
         }
       })
       .then(res => {
-        console.log(res.data);
+        console.log(res.data)
       })
       .catch(err => {
         console.log(err)
+        this.props.navigator(false)
       });
   };
 
   componentDidMount() {
+    console.log("looks like it's logged in")
     // fetch fetchItemList
     this.fetchItemList()
   }

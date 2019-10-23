@@ -18,14 +18,12 @@ import (
 var db *sql.DB
 var err error
 
-// auth handlers
-
 // CORS middleware
-// CORSDecorator - it will apply the CORS headers to the mux Router
 type CORSDecorator struct {
 	R *mux.Router
 }
 
+// CORSDecorator - it will apply the CORS headers to the mux Router
 func (c *CORSDecorator) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	origin := r.Header.Get("Origin")
 	// set the headers
@@ -43,9 +41,10 @@ func (c *CORSDecorator) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c.R.ServeHTTP(w, r)
 }
 
+// auth handlers
+
 // authentication middleware
 func handleAuth(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
-	log.Println("Authenticating...")
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Token"] != nil {
 			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (i interface{}, e error) {
@@ -109,12 +108,22 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something wrong happened", http.StatusInternalServerError)
 	}
 
+	createdUser := database.GetUserWithUsername(db, user.UserName)
+
 	// anonymous struct to send token
 	response := struct {
 		AuthToken		string		`json:"token"`
+		Id				int			`json:"id"`
+		Username		string		`json:"username"`
+		Email			string		`json:"email"`
 	}{
 		AuthToken:	token,
+		Id:			createdUser.ID,
+		Username:	createdUser.UserName,
+		Email:		createdUser.Email,
 	}
+
+	log.Println(response)
 
 	encoder := json.NewEncoder(w)
 	err = encoder.Encode(response)
@@ -156,11 +165,19 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something wrong happened", http.StatusInternalServerError)
 	}
 
+	user := database.GetUserWithUsername(db, data.Username)
+
 	// anonymous struct to send token
 	response := struct {
 		AuthToken		string		`json:"token"`
+		Id				int			`json:"id"`
+		Username		string		`json:"username"`
+		Email			string		`json:"email"`
 	}{
 		AuthToken:	token,
+		Id:			user.ID,
+		Username:	user.UserName,
+		Email:		user.Email,
 	}
 
 	encoder := json.NewEncoder(w)
@@ -409,7 +426,7 @@ func createMapping(id int) string {
 func main() {
 	fmt.Println("Hello from main!!!")
 	// try connecting to database
-	db, err = sql.Open("mysql", "pasteit:pasteit@tcp(127.0.0.1:3306)/pasteit_db")
+	db, err = sql.Open("mysql", "pasteit:pasteit@tcp(127.0.0.1:3306)/pasteit")
 	if err != nil {
 		panic(err.Error())
 	}

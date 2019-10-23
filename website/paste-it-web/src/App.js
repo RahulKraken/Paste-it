@@ -9,7 +9,7 @@ class App extends React.Component {
 
   // login state
   state = {
-    loginStatus: false
+    loginStatus: true
   }
 
   // method to modify state
@@ -27,7 +27,7 @@ class App extends React.Component {
     } else {
       return (
         <div className="App">
-          <Dashboard/>
+          <Dashboard navigator={ this.isLoggedIn }/>
         </div>
       )
     }

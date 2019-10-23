@@ -5,8 +5,7 @@ import SidebarItem from "./SidebarItem";
 export class Sidebar extends Component {
   // state
   state = {
-    items: [1, 2, 3, 4, 5, 6, 7, 8],
-    display: true
+    items: []
   };
 
   // change display mode
@@ -24,7 +23,7 @@ export class Sidebar extends Component {
     return this.state.items.map(item => {
       return (
         <div>
-          <SidebarItem />
+          <SidebarItem key={item.id} />
         </div>
       );
     });

@@ -108,6 +108,24 @@ func GetUser(db *sql.DB, id int) User {
 	return user
 }
 
+// GetUserWithUsername - get user with username
+func GetUserWithUsername(db *sql.DB, username string) User {
+	data, err := db.Query("SELECT id, user_name, email FROM user WHERE user_name = ? LIMIT 1", username)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var user User
+	for data.Next() {
+		err = data.Scan(&user.ID, &user.UserName, &user.Email)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	return user
+}
+
 // UpdateUser - update user
 func UpdateUser(db *sql.DB, user User) User {
 	_, err := db.Query("UPDATE user SET user.user_name = ? WHERE id = ?", user.UserName, user.ID)
