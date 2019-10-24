@@ -16,23 +16,34 @@ export class Dashboard extends Component {
    */
   fetchItemList = () => {
     axios
-      .get(`` + window.localStorage.getItem("userid"), {
+      .get(`http://localhost:5000/api/pastes/` + window.localStorage.getItem("userid"), {
         headers: {
           Token: window.localStorage.getItem("Token")
         }
       })
       .then(res => {
+        // console.log("successfully logged in")
         console.log(res.data)
       })
       .catch(err => {
         console.log(err)
-        this.props.loginstatusNav(false)
+        // this.logout()
       });
   };
+
+  logout = () => {
+    console.log("Logging out")
+    window.localStorage.setItem("token", "")
+    window.localStorage.setItem("userid", "")
+    this.props.loginstatusNav(false)
+  }
 
   componentDidMount() {
     console.log("looks like it's logged in")
     // fetch fetchItemList
+    if (window.localStorage.getItem("token") == "") {
+      this.logout()
+    }
     this.fetchItemList()
   }
 

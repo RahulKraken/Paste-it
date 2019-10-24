@@ -50,6 +50,7 @@ export class Signup extends Component {
 
   sendToDashboard = () => {
     console.log("sending to dashboard")
+    this.props.loginstatusNav(true)
   }
 
   render() {
