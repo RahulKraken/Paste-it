@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { throwStatement } from "@babel/types";
 
 export class Signup extends Component {
 
   // state for signup
   state = {
     email: "",
-    username: "",
+    user_name: "",
     pasword: ""
   }
 
@@ -15,13 +16,30 @@ export class Signup extends Component {
     marginLeft: "16px"
   };
 
+  // handle textfield changes
+  handleEmailChange = (event) => {
+    this.setState({ email: event.target.value })
+  }
+
+  handleTfChange = (event) => {
+    this.setState({ user_name: event.target.value })
+  }
+
+  handlePsdChange = (event) => {
+    this.setState({ pasword: event.target.value })
+  }
+
   // handle create account
   handleCreateAccount = (event) => {
     event.preventDefault()
-    console.log("Creating account")
     axios.post("http://localhost:5000/signup", this.state)
       .then((res) => {
         console.log(res)
+        // put token in local storage
+        window.localStorage.setItem("token", res.data.token)
+        window.localStorage.setItem("userid", res.data.id)
+
+        this.sendToDashboard()
       })
       .catch((err) => {
         console.log(err)
@@ -29,6 +47,10 @@ export class Signup extends Component {
   }
 
   // handle login instead
+
+  sendToDashboard = () => {
+    console.log("sending to dashboard")
+  }
 
   render() {
     return (
@@ -58,6 +80,7 @@ export class Signup extends Component {
                 id="inputEmail"
                 aria-describedby="emailHelp"
                 placeholder="Email"
+                onChange={this.handleEmailChange}
               />
             </div>
             <div className="form-group">

@@ -29,7 +29,7 @@ type Mapping struct {
 
 // LoginCredentials struct
 type LoginCredentials struct {
-	Username 	string	 	`json:"username"`
+	Username 	string	 	`json:"user_name"`
 	Pasword 	string		`json:"pasword"`
 }
 

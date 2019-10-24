@@ -16,7 +16,7 @@ export class Dashboard extends Component {
    */
   fetchItemList = () => {
     axios
-      .get(`http://localhost:5000/api/paste/` + window.localStorage.getItem("userid"), {
+      .get(`` + window.localStorage.getItem("userid"), {
         headers: {
           Token: window.localStorage.getItem("Token")
         }

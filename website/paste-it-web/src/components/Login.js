@@ -5,7 +5,7 @@ import "../css/login.css";
 export class Login extends Component {
   // login data state
   state = {
-    username: "",
+    user_name: "",
     pasword: "",
     email: ""
   };
@@ -17,7 +17,7 @@ export class Login extends Component {
 
   // handle changes to text
   handleTfChange = event => {
-    this.setState({ username: event.target.value })
+    this.setState({ user_name: event.target.value })
   };
 
   // handle password changes
@@ -32,7 +32,7 @@ export class Login extends Component {
     console.log(this.state)
     axios
       .post(`http://localhost:5000/login`, {
-        username: this.state.username,
+        user_name: this.state.user_name,
         pasword: this.state.pasword
       })
       .then(res => {

@@ -80,6 +80,8 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Could not parse request", err)
 	}
 
+	log.Println("username:", user.UserName, "; email:", user.Email, "; pasword:", user.Pasword)
+
 	// check if email already exists
 	b := database.ExistsEmail(db, user.Email)
 	if b {
@@ -141,6 +143,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&data); if err != nil {
 		log.Println("Could not parse request", err)
 	}
+
+	log.Println("username:", data.Username, "; pasword:", data.Pasword)
 
 	// check if username exists
 	b := database.ExistsUsername(db, data.Username)
