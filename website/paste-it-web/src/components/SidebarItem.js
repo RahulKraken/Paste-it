@@ -17,7 +17,7 @@ export class SidebarItem extends Component {
   render() {
     return (
       <div>
-        <h3>SidebarItem</h3>
+        <h3>{this.props.title}</h3>
       </div>
     )
   }

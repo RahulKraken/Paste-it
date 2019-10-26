@@ -15,6 +15,7 @@ export class Dashboard extends Component {
    * items for the given user
    */
   fetchItemList = () => {
+    console.log("fetching item list")
     axios
       .get(`http://localhost:5000/api/pastes/` + window.localStorage.getItem("userid"), {
         headers: {
@@ -24,6 +25,9 @@ export class Dashboard extends Component {
       .then(res => {
         // console.log("successfully logged in")
         console.log(res.data)
+        this.setState({ items: res.data })
+        console.log("done fetching item list")
+        console.log("state:", this.state.items)
       })
       .catch(err => {
         console.log(err)
@@ -36,10 +40,11 @@ export class Dashboard extends Component {
     window.localStorage.setItem("token", "")
     window.localStorage.setItem("userid", "")
     this.props.loginstatusNav(false)
+    console.log("logged out")
   }
 
   componentDidMount() {
-    console.log("looks like it's logged in")
+    console.log("dashboard mounted")
     // fetch fetchItemList
     if (window.localStorage.getItem("token") === "") {
       this.logout()
@@ -51,7 +56,7 @@ export class Dashboard extends Component {
     return (
       <div className="row">
         <div className="col-4">
-          <Sidebar />
+          <Sidebar items={this.state.items}/>
         </div>
         <div className="col-8">
           <Workspace />
