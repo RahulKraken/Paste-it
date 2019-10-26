@@ -41,12 +41,16 @@ func (c *CORSDecorator) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c.R.ServeHTTP(w, r)
 }
 
+/**
+not being used right now
+ */
 // auth handlers
 
 // authentication middleware
 func handleAuth(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Token"] != nil {
+			log.Println("Token:", r.Header["Token"][0])
 			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (i interface{}, e error) {
 				_, ok := token.Method.(*jwt.SigningMethodHMAC); if !ok {
 					return nil, fmt.Errorf("something wrong happened")
@@ -56,7 +60,7 @@ func handleAuth(endpoint func(http.ResponseWriter, *http.Request)) http.Handler 
 			})
 
 			if err != nil {
-				log.Println("Something went wrong:", err.Error())
+				log.Println("Something wrong happened:", err.Error())
 				http.Error(w, "Could not authenticate", http.StatusUnauthorized)
 				return
 			}
@@ -453,19 +457,19 @@ func main() {
 	r.HandleFunc("/signup", signUpHandler).Methods("POST")
 
 	// user handlers
-	r.Handle("/api/user", handleAuth(listUsersHandler)).Methods("GET")
-	r.Handle("/api/user", handleAuth(createUserHandler)).Methods("POST")
-	r.Handle("/api/user", handleAuth(updateUserHandler)).Methods("PUT")
-	r.Handle("/api/user/{id}", handleAuth(getUserHandler)).Methods("GET")
-	r.Handle("/api/user/{id}", handleAuth(deleteUserHandler)).Methods("DELETE")
+	r.HandleFunc("/api/user", listUsersHandler).Methods("GET")
+	r.HandleFunc("/api/user", createUserHandler).Methods("POST")
+	r.HandleFunc("/api/user", updateUserHandler).Methods("PUT")
+	r.HandleFunc("/api/user/{id}", getUserHandler).Methods("GET")
+	r.HandleFunc("/api/user/{id}", deleteUserHandler).Methods("DELETE")
 
 	// paste handlers
 	r.HandleFunc("/paste/{hash}", fetchPasteWithHash).Methods("GET")
-	r.Handle("/api/pastes/{id}", handleAuth(listPastesHandler)).Methods("GET")
-	r.Handle("/api/paste", handleAuth(createPasteHandler)).Methods("POST")
-	r.Handle("/api/paste", handleAuth(updatePasteHandler)).Methods("PUT")
-	r.Handle("/api/paste/{id}", handleAuth(getPasteHandler)).Methods("GET")
-	r.Handle("/api/paste/{id}", handleAuth(deletePasteHandler)).Methods("DELETE")
+	r.HandleFunc("/api/pastes/{id}", listPastesHandler).Methods("GET")
+	r.HandleFunc("/api/paste", createPasteHandler).Methods("POST")
+	r.HandleFunc("/api/paste", updatePasteHandler).Methods("PUT")
+	r.HandleFunc("/api/paste/{id}", getPasteHandler).Methods("GET")
+	r.HandleFunc("/api/paste/{id}", deletePasteHandler).Methods("DELETE")
 
 	fmt.Println("Server started on port: 5000")
 

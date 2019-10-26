@@ -41,7 +41,7 @@ export class Dashboard extends Component {
   componentDidMount() {
     console.log("looks like it's logged in")
     // fetch fetchItemList
-    if (window.localStorage.getItem("token") == "") {
+    if (window.localStorage.getItem("token") === "") {
       this.logout()
     }
     this.fetchItemList()
