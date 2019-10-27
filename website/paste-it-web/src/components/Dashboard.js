@@ -7,8 +7,13 @@ import axios from "axios";
 export class Dashboard extends Component {
   // state
   state = {
-    items: []
+    items: [],
+    selected: -1
   };
+
+  setSelected = (idx) => {
+    this.setState({ selected: idx })
+  }
 
   /**
    * just test function to fetch list of 
@@ -34,6 +39,12 @@ export class Dashboard extends Component {
       });
   };
 
+  /**
+   * performs logout operations
+   * make jwt token = ""
+   * make userid = ""
+   * navigate to login screen
+   */
   logout = () => {
     console.log("Logging out")
     window.localStorage.setItem("token", "")
@@ -54,10 +65,10 @@ export class Dashboard extends Component {
     return (
       <div className="row">
         <div className="col-4">
-          <Sidebar items={this.state.items}/>
+          <Sidebar items={this.state.items} setSelected={this.setSelected}/>
         </div>
         <div className="col-8">
-          <Workspace />
+          <Workspace selected={this.state.selected}/>
         </div>
       </div>
     );

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
 export class SidebarItem extends Component {
-  
   // state
   state = {
     key: this.props.id,
@@ -11,7 +10,8 @@ export class SidebarItem extends Component {
   // modify selected state
   // @param "val" : bool
   setSelected = () => {
-    console.log(this.state.key)
+    console.log("selected:", this.state.key)
+    this.props.setSelected(this.state.key)
     this.setState({selected: true})
   }
 
