@@ -26,7 +26,6 @@ export class Dashboard extends Component {
         // console.log("successfully logged in")
         console.log(res.data)
         this.setState({ items: res.data })
-        console.log("done fetching item list")
         console.log("state:", this.state.items)
       })
       .catch(err => {
@@ -44,7 +43,6 @@ export class Dashboard extends Component {
   }
 
   componentDidMount() {
-    console.log("dashboard mounted")
     // fetch fetchItemList
     if (window.localStorage.getItem("token") === "") {
       this.logout()

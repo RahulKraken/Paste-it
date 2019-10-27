@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { throwStatement } from "@babel/types";
 
 export class Signup extends Component {
 

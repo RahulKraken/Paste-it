@@ -4,19 +4,20 @@ export class SidebarItem extends Component {
   
   // state
   state = {
-    key: -1,
+    key: this.props.id,
     selected: false
   }
 
   // modify selected state
   // @param "val" : bool
-  setSelected = (val) => {
-    this.setState({selected: val})
+  setSelected = () => {
+    console.log(this.state.key)
+    this.setState({selected: true})
   }
 
   render() {
     return (
-      <div>
+      <div onClick={this.setSelected}>
         <h3>{this.props.title}</h3>
       </div>
     )
